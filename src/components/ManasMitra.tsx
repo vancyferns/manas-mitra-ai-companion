@@ -109,7 +109,7 @@ const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "नमस्ते! I'm Manas Mitra, your wellness companion. I'm here to listen and support you through whatever you're feeling. How are you doing today?",
+      text: `<span style='display:flex;align-items:center;gap:0.5em;justify-content:center;'><svg width='28' height='28' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'><circle cx='12' cy='12' r='12' fill='#a5b4fc'/><path d='M8.5 10.5C8.5 9.11929 9.61929 8 11 8C12.3807 8 13.5 9.11929 13.5 10.5C13.5 11.8807 12.3807 13 11 13C9.61929 13 8.5 11.8807 8.5 10.5Z' fill='white'/><ellipse cx='11' cy='16' rx='4' ry='1.5' fill='white'/></svg> <span>नमस्ते! I'm <b>Manas Mitra</b>, your wellness companion.<br/>I'm here to listen and support you through whatever you're feeling.<br/>How are you doing today?</span></span>`,
       sender: 'bot',
       timestamp: new Date()
     }
@@ -192,12 +192,16 @@ const ChatPage: React.FC = () => {
             <div className={`max-w-[85%] sm:max-w-[70%] ${
               message.sender === 'user' ? 'text-right' : ''
             }`}>
-              <div className={`rounded-2xl px-4 py-3 shadow-soft transition-smooth ${
+              <div className={`rounded-3xl px-5 py-4 shadow-xl transition-all duration-200 ${
                 message.sender === 'bot'
-                  ? 'bg-card text-card-foreground'
-                  : 'bg-gradient-primary text-white'
+                  ? 'bg-card text-card-foreground hover:shadow-2xl'
+                  : 'bg-gradient-primary text-white hover:shadow-2xl'
               }`}>
-                <p className="text-sm leading-relaxed">{message.text}</p>
+                {message.sender === 'bot' ? (
+                  <p className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: message.text }} />
+                ) : (
+                  <p className="text-sm leading-relaxed">{message.text}</p>
+                )}
               </div>
               <p className="text-xs text-muted-foreground mt-1 px-2">
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -575,50 +579,73 @@ const ManasMitra: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-background">
+    <div
+      className="min-h-screen w-full relative"
+      style={{
+        background: 'radial-gradient(ellipse at 60% 0%, #f8fafc 60%, #e0e7ef 100%)',
+      }}
+    >
+      {/* Subtle SVG pattern overlay for extra depth */}
+      <svg className="pointer-events-none absolute inset-0 w-full h-full opacity-10 z-0" width="100%" height="100%" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="2" fill="#a5b4fc" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dots)" />
+      </svg>
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-sm border-b border-border shadow-soft sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Manas Mitra (मानस मित्र)
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">Your Safe Space to Talk</p>
+      <header className="bg-white/80 backdrop-blur border-b border-slate-200 shadow-md sticky top-0 z-50">
+        <div className="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/favicon.ico" alt="Manas Mitra Logo" className="w-10 h-10 rounded-full shadow" />
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-slate-800" style={{letterSpacing: '0.01em'}}>Manas Mitra <span className="text-primary">(मानस मित्र)</span></h1>
+              <p className="text-xs text-slate-500 mt-1 font-medium">Your Safe Space to Talk</p>
+            </div>
           </div>
+          <span className="rounded-full px-3 py-1 bg-gradient-to-r from-pink-200 via-blue-200 to-green-200 text-xs font-semibold text-slate-700 shadow">Wellness Companion</span>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto pb-20">
-        {renderCurrentPage()}
+      <main className="max-w-4xl mx-auto pb-28 pt-6 px-2 sm:px-0">
+        <div className="rounded-3xl shadow-xl bg-white/90 border border-slate-200 p-2 sm:p-6" style={{backdropFilter: 'blur(2px)'}}>
+          {renderCurrentPage()}
+        </div>
       </main>
 
       {/* Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t border-border shadow-soft">
-        <div className="max-w-4xl mx-auto px-4 py-2">
-          <div className="flex justify-around">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-slate-200 shadow-lg z-50">
+        <div className="max-w-4xl mx-auto px-4 py-3">
+          <div className="flex justify-around gap-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const isActive = currentPage === item.id;
-              
               return (
                 <button
                   key={item.id}
                   onClick={() => setCurrentPage(item.id)}
-                  className={`flex flex-col items-center py-2 px-4 rounded-2xl transition-smooth ${
+                  className={`flex flex-col items-center py-2 px-4 rounded-2xl font-semibold transition-all duration-200 ${
                     isActive
-                      ? 'bg-gradient-primary text-white shadow-glow'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                      ? 'bg-gradient-to-r from-blue-400 via-pink-300 to-green-300 text-slate-900 shadow-lg scale-105'
+                      : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
                   }`}
+                  style={isActive ? {boxShadow: '0 2px 16px 0 rgba(80,120,255,0.10)'} : {}}
                 >
-                  <Icon size={20} />
-                  <span className="text-xs font-medium mt-1">{item.label}</span>
+                  <Icon size={22} />
+                  <span className="text-xs mt-1 tracking-wide">{item.label}</span>
                 </button>
               );
             })}
           </div>
         </div>
       </nav>
+
+      {/* Decorative SVG or Illustration for warmth */}
+      <svg className="pointer-events-none absolute left-0 bottom-0 w-full h-32 opacity-30" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#a5b4fc" fillOpacity="0.18" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,154.7C672,160,768,192,864,197.3C960,203,1056,181,1152,154.7C1248,128,1344,96,1392,80L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+      </svg>
     </div>
   );
 };
